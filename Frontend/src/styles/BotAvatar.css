@@ -1,0 +1,20 @@
+.bot-avatar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.bot-avatar img {
+  width: 80px;
+  height: 80px;
+}
+
+.bot-avatar.speaking {
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}

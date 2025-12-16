@@ -12,30 +12,24 @@ export default function ChatBox() {
 
   const fileInputRef = useRef(null);
 
-  // Open file picker
   function handleAttachClick() {
     fileInputRef.current.click();
   }
 
-  // When user selects a file
   function handleFileSelect(e) {
     const file = e.target.files[0];
     if (!file) return;
 
     setAttachment(file);
-
-    // Show attachment in chat (ChatGPT-style)
     setMessages((prev) => [
       ...prev,
       { role: "user", text: `📎 ${file.name}` }
     ]);
   }
 
-  // Send message + attachment
   async function handleSend() {
     if (!input.trim() && !attachment) return;
 
-    // Show user text message
     if (input.trim()) {
       setMessages((prev) => [
         ...prev,
@@ -47,7 +41,6 @@ export default function ChatBox() {
     setIsSpeaking(true);
 
     try {
-      // 1️⃣ Upload attachment first (if exists)
       if (attachment) {
         await uploadAttachment({
           file: attachment,
@@ -55,7 +48,6 @@ export default function ChatBox() {
         });
       }
 
-      // 2️⃣ Ask question / trigger reasoning
       const queryText =
         input || "Process the uploaded content and summarize it";
 
@@ -66,7 +58,6 @@ export default function ChatBox() {
         { role: "ai", text: data.answer }
       ]);
 
-      // Reset attachment
       setAttachment(null);
 
     } catch (error) {
@@ -94,12 +85,10 @@ export default function ChatBox() {
       </div>
 
       <div className="input-box">
-        {/* Attachment icon */}
         <span className="attach-icon" onClick={handleAttachClick}>
           📎
         </span>
 
-        {/* Hidden file input */}
         <input
           ref={fileInputRef}
           type="file"

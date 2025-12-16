@@ -1,11 +1,10 @@
-import express from 'express';
-import multer from 'multer';
-import { ingestAudio, ingestDocument } from '../controllers/ingest_controller.js';
+import express from "express";
+import multer from "multer";
+import { ingestFile } from "../controllers/ingest_controller.js";
 
 const router = express.Router();
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: "uploads/" });
 
-router.post('/audio', upload.single('file'), ingestAudio);
-router.post('/document', upload.single('file'), ingestDocument);
+router.post("/", upload.single("file"), ingestFile);
 
 export default router;

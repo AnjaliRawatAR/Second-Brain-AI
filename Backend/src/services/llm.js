@@ -1,8 +1,10 @@
-import axios from 'axios';
+import axios from "axios";
+
+const GEMINI_URL =
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
 
 export async function generateAnswer(context, query) {
   const prompt = `
-You are a helpful assistant.
 Answer the user's question using ONLY the context below.
 
 Context:
@@ -13,18 +15,11 @@ ${query}
 `;
 
   const response = await axios.post(
-    'https://api.openai.com/v1/chat/completions',
+    `${GEMINI_URL}?key=${process.env.GEMINI_API_KEY}`,
     {
-      model: 'gpt-4o-mini',
-      messages: [{ role: 'user', content: prompt }]
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json'
-      }
+      contents: [{ parts: [{ text: prompt }] }]
     }
   );
 
-  return response.data.choices[0].message.content;
+  return response.data.candidates[0].content.parts[0].text;
 }

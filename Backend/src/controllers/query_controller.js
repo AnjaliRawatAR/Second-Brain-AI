@@ -1,17 +1,18 @@
-import { retrieveRelevantChunks } from '../retrieval/retriever.js';
-import { generateAnswer } from '../services/llm.js';
+import db from "../db/index.js";
+import { generateAnswer } from "../services/llm.js";
 
-export async function answerQuery(req, res, next) {
-  try {
-    const { query } = req.body;
+export async function answerQuery(req, res) {
+  const { query } = req.body;
 
-    const chunks = await retrieveRelevantChunks(query);
-    const context = chunks.map(c => c.text_chunk).join('\n');
+  db.all("SELECT content FROM documents", async (err, rows) => {
+    const context = rows.map(r => r.content).join("\n");
 
     const answer = await generateAnswer(context, query);
 
+    // Store chat history
+    db.run("INSERT INTO chats (role, message) VALUES (?, ?)", ["user", query]);
+    db.run("INSERT INTO chats (role, message) VALUES (?, ?)", ["ai", answer]);
+
     res.json({ answer });
-  } catch (err) {
-    next(err);
-  }
+  });
 }

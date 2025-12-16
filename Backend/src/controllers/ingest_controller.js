@@ -1,20 +1,23 @@
-import { processAudio } from '../services/audio.js';
-import { processDocument } from '../services/document.js';
+import path from "path";
+import { processDocument } from "../services/document.js";
+import { processAudio } from "../services/audio.js";
 
-export async function ingestAudio(req, res, next) {
-  try {
-    await processAudio(req.file);
-    res.json({ status: 'Audio ingested successfully' });
-  } catch (err) {
-    next(err);
-  }
-}
+export async function ingestFile(req, res) {
+  const file = req.file;
+  const ext = path.extname(file.originalname).toLowerCase();
 
-export async function ingestDocument(req, res, next) {
   try {
-    await processDocument(req.file);
-    res.json({ status: 'Document ingested successfully' });
+    if (ext === ".pdf" || ext === ".txt") {
+      await processDocument(file);
+    } else if (ext === ".mp3" || ext === ".wav") {
+      await processAudio(file);
+    } else {
+      return res.status(400).json({ error: "Unsupported file type" });
+    }
+
+    res.json({ message: "File ingested successfully" });
   } catch (err) {
-    next(err);
+    console.error(err);
+    res.status(500).json({ error: "Ingestion failed" });
   }
 }
